@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan 2
+name: Coverity Bridge CLI Scan Updated
 
 on:
   push:
@@ -11,25 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+
+      # Coverity Connect URL
       BRIDGE_COVERITY_CONNECT_URL: ${{ secrets.BRIDGE_COVERITY_CONNECT_URL }}
+
+      # Coverity username
       BRIDGE_COVERITY_CONNECT_USER_NAME: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_NAME }}
+
+      # Coverity password or auth key
       BRIDGE_COVERITY_CONNECT_USER_PASSWORD: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_PASSWORD }}
 
+      # Run Coverity Local Analysis
       BRIDGE_COVERITY_LOCAL: "true"
 
-      BRIDGE_COVERITY_BUILD_COMMAND: "mvn clean package -DskipTests"
+      # Maven clean build
       BRIDGE_COVERITY_CLEAN_COMMAND: "mvn clean"
 
+      # Build command used for capture
+      BRIDGE_COVERITY_BUILD_COMMAND: "mvn clean package -DskipTests"
+
     steps:
+
+      # Checkout repository
       - name: Checkout Source
         uses: actions/checkout@v4
 
+      # Install Java required by DVJA
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '11'
+          java-version: "11"
 
+      # Install Coverity self-signed certificate
       - name: Install Coverity Certificate
         env:
           COVERITY_CERT: ${{ secrets.COVERITY_CERT }}
@@ -37,18 +51,22 @@ jobs:
           echo "$COVERITY_CERT" | sudo tee /usr/local/share/ca-certificates/coverity.crt
           sudo update-ca-certificates
 
+      # Download Bridge CLI
       - name: Download Bridge CLI
         run: |
           curl -fLsS -o bridge.zip "https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip"
           unzip -qo bridge.zip -d $RUNNER_TEMP
 
+      # Run Coverity Scan
       - name: Run Coverity Scan
         run: |
           $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
             --stage connect \
             coverity.connect.project.name="coveritytest" \
-            coverity.connect.stream.name="coveritytest-master"
+            coverity.connect.stream.name="coveritytest-master" \
+            coverity.connect.policy.view="Outstanding Issues"
 
+      # Upload logs if scan fails
       - name: Upload Logs
         if: always()
         uses: actions/upload-artifact@v4
