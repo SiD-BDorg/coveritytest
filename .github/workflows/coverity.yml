@@ -62,8 +62,8 @@ jobs:
         run: |
           $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
             --stage connect \
-            coverity.connect.project.name="coveritytest" \
-            coverity.connect.stream.name="coveritytest-master" \
+            coverity.connect.project.name="coveritytestfrmGH" \
+            coverity.connect.stream.name="coveritytest-masterGH" \
             coverity.connect.policy.view="Outstanding Issues"
 
       # Upload logs if scan fails
