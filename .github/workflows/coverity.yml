@@ -1,0 +1,57 @@
+name: Coverity Bridge CLI Scan
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+
+    env:
+      BRIDGE_COVERITY_CONNECT_URL: ${{ secrets.BRIDGE_COVERITY_CONNECT_URL }}
+      BRIDGE_COVERITY_CONNECT_USER_NAME: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_NAME }}
+      BRIDGE_COVERITY_CONNECT_USER_PASSWORD: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_PASSWORD }}
+
+      BRIDGE_COVERITY_LOCAL: "true"
+
+      BRIDGE_COVERITY_BUILD_COMMAND: "mvn clean package -DskipTests"
+      BRIDGE_COVERITY_CLEAN_COMMAND: "mvn clean"
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+
+      - name: Install Coverity Certificate
+        env:
+          COVERITY_CERT: ${{ secrets.COVERITY_CERT }}
+        run: |
+          echo "$COVERITY_CERT" | sudo tee /usr/local/share/ca-certificates/coverity.crt
+          sudo update-ca-certificates
+
+      - name: Download Bridge CLI
+        run: |
+          curl -fLsS -o bridge.zip "https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip"
+          unzip -qo bridge.zip -d $RUNNER_TEMP
+
+      - name: Run Coverity Scan
+        run: |
+          $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
+            --stage connect \
+            coverity.connect.project.name="coveritytest" \
+            coverity.connect.stream.name="coveritytest-master"
+
+      - name: Upload Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bridge-logs
+          path: .bridge
