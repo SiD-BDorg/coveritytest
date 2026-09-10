@@ -46,8 +46,8 @@ jobs:
         run: |
           $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
             --stage connect \
-            coverity.connect.project.name="Demo 2.1" \
-            coverity.connect.stream.name="Demo 2.1 master"
+            coverity.connect.project.name="Demo 2.2" \
+            coverity.connect.stream.name="Demo 2.2 master"
 
       - name: Upload Logs
         if: always()
