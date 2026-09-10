@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan Updated Test 4 maybe?
+name: Coverity Bridge CLI Scan Before DEMO
 
 on:
   push:
@@ -62,9 +62,8 @@ jobs:
         run: |
           $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
             --stage connect \
-            coverity.connect.project.name="coveritytestfrmGH" \
-            coverity.connect.stream.name="coveritytest-masterGH" \
-            coverity.connect.policy.view="Outstanding Issues"
+            coverity.connect.project.name="coveritytestbfrDEMO" \
+            coverity.connect.stream.name="coveritytest-masterGHbfrDEMO" \
 
       # Upload logs if scan fails
       - name: Upload Logs
