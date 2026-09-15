@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan Linux
+name: Coverity Bridge CLI Scan Linux 2
 
 on:
   push:
@@ -15,6 +15,8 @@ jobs:
       BRIDGE_COVERITY_CONNECT_USER_NAME: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_NAME }}
       BRIDGE_COVERITY_CONNECT_USER_PASSWORD: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_PASSWORD }}
 
+      BRIDGE_NETWORK_SSL_TRUSTALL: ${{ secrets.BRIDGE_NETWORK_SSL_TRUSTALL }}
+
       BRIDGE_COVERITY_LOCAL: "true"
 
       BRIDGE_COVERITY_BUILD_COMMAND: "mvn clean package -DskipTests"
@@ -24,7 +26,7 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Setup Java 11
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -40,10 +42,7 @@ jobs:
 
       - name: Download Bridge CLI
         run: |
-          curl -fLsS \
-            -o bridge.zip \
-            "https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip"
-
+          curl -fLsS -o bridge.zip "https://repo.blackduck.com/artifactory/bds-integrations-release/com/blackduck/integration/bridge/binaries/bridge-cli-bundle/latest/bridge-cli-bundle-linux64.zip"
           unzip -qo bridge.zip -d $RUNNER_TEMP
 
       - name: Run Coverity Scan
