@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan 25.4.1
+name: Coverity Bridge CLI Scan 25.5
 
 on:
   push:
@@ -55,5 +55,5 @@ jobs:
           $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
             --stage connect \
             --diagnostics \
-            coverity.connect.project.name="Demo 25.3 Linux" \
-            coverity.connect.stream.name="Demo 25.3 Linux master"
+            coverity.connect.project.name="Demo 25.5" \
+            coverity.connect.stream.name="Demo 25.3"
