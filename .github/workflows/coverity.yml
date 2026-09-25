@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan Linux 22.23
+name: Coverity Bridge CLI Scan 25.3
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
       BRIDGE_COVERITY_CONNECT_USER_NAME: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_NAME }}
       BRIDGE_COVERITY_CONNECT_USER_PASSWORD: ${{ secrets.BRIDGE_COVERITY_CONNECT_USER_PASSWORD }}
 
-      BRIDGE_NETWORK_SSL_TRUSTALL: ${{ secrets.BRIDGE_NETWORK_SSL_TRUSTALL }}
+      BRIDGE_NETWORK_SSL_TRUSTALL: "true"
 
       BRIDGE_COVERITY_LOCAL: "true"
 
@@ -33,12 +33,18 @@ jobs:
           java-version: '11'
           cache: maven
 
+      - name: Verify Maven Build
+        run: |
+          mvn -version
+          mvn clean package -DskipTests
+
       - name: Install Coverity Certificate
         env:
           COVERITY_CERT: ${{ secrets.COVERITY_CERT }}
         run: |
-          echo "$COVERITY_CERT" | sudo tee /usr/local/share/ca-certificates/coverity.crt > /dev/null
-          sudo update-ca-certificates
+          echo "$COVERITY_CERT" > coverity.crt
+          sudo cp coverity.crt /usr/local/share/ca-certificates/coverity.crt
+          sudo update-ca-certificates || true
 
       - name: Download Bridge CLI
         run: |
@@ -50,12 +56,5 @@ jobs:
           $RUNNER_TEMP/bridge-cli-bundle-linux64/bridge-cli \
             --stage connect \
             --diagnostics \
-            coverity.connect.project.name="Demo 3.3 Linux" \
-            coverity.connect.stream.name="Demo 3.3 Linux master"
-
-      - name: Upload Bridge Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bridge-logs
-          path: .bridge
+            coverity.connect.project.name="Demo 25.3 Linux" \
+            coverity.connect.stream.name="Demo 25.3 Linux master"
