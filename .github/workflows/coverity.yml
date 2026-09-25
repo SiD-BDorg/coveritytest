@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan Linux 22.22
+name: Coverity Bridge CLI Scan Linux 22.23
 
 on:
   push:
