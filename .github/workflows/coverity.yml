@@ -1,4 +1,4 @@
-name: Coverity Bridge CLI Scan 25.4
+name: Coverity Bridge CLI Scan 25.4.1
 
 on:
   push:
